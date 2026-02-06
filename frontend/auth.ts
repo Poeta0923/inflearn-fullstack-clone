@@ -3,7 +3,6 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/prisma"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { comparePassword } from "./lib/password-utils";
-import { Users } from "lucide-react";
  
 export const { handlers, auth, signIn, signOut } = NextAuth({
   useSecureCookies: process.env.NODE_ENV === "production",
@@ -27,7 +26,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
 
         // 1. 모든 값들이 정상적으로 들어왔는가?
-        if (credentials?.email && credentials?.password) {
+        if (!credentials || !credentials.email || !credentials.password) {
           throw new Error("이메일과 비밀번호를 입력해주세요.")
         }
 
