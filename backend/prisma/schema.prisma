@@ -76,12 +76,13 @@ model VerificationToken {
 model Course {
   id               String   @id @default(uuid())
   slug             String   @unique
+  title            String
   shortDescription String?  @map("short_descriptrion")
   description      String?  @map("description")
   thumbnailUrl     String?  @map("thumbnail_url")
   price            Int      @default(0)
   discountPrice    Int?     @map("discount_price")
-  lever            String   @default("BEGINNER")
+  level            String   @default("BEGINNER")
   instructorId     String   @map("instructor_id")
   isPublished      Boolean  @default(false) @map("is_published")
   createdAt        DateTime @default(now()) @map("created_at")
