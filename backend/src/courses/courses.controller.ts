@@ -1,6 +1,23 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CoursesService } from './courses.service';
-import { ApiBearerAuth, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import type { Request } from 'express';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
@@ -20,22 +37,21 @@ export class CoursesController {
     description: '코스 생성',
     type: CourseEntity,
   })
-  create(@Req() req:Request, @Body() createCourseDto: CreateCourseDto) {
+  create(@Req() req: Request, @Body() createCourseDto: CreateCourseDto) {
     return this.coursesService.create(req.user!.sub, createCourseDto);
   }
 
   @Get()
-  @ApiQuery({name: 'title', required: false})
-  @ApiQuery({name: 'level', required: false})
-  @ApiQuery({name: 'categoryId', required: false})
-  @ApiQuery({name: 'skip', required: false})
-  @ApiQuery({name: 'take', required: false})
+  @ApiQuery({ name: 'title', required: false })
+  @ApiQuery({ name: 'level', required: false })
+  @ApiQuery({ name: 'categoryId', required: false })
+  @ApiQuery({ name: 'skip', required: false })
+  @ApiQuery({ name: 'take', required: false })
   @ApiOkResponse({
     description: '코스 목록',
     type: CourseEntity,
     isArray: true,
   })
-
   findAll(
     @Query('title') title?: string,
     @Query('level') level?: string,
@@ -46,7 +62,7 @@ export class CoursesController {
     const where: Prisma.CourseWhereInput = {};
 
     if (title) {
-      where.title = {contains: title, mode: 'insensitive'};
+      where.title = { contains: title, mode: 'insensitive' };
     }
 
     if (level) {
@@ -56,8 +72,8 @@ export class CoursesController {
     if (categoryId) {
       where.categories = {
         some: {
-          id: categoryId
-        }
+          id: categoryId,
+        },
       };
     }
 
@@ -66,7 +82,7 @@ export class CoursesController {
       skip: skip ? parseInt(skip) : undefined,
       take: take ? parseInt(take) : undefined,
       orderBy: {
-        createdAt: 'desc'
+        createdAt: 'desc',
       },
     });
   }
@@ -75,11 +91,11 @@ export class CoursesController {
   @ApiQuery({
     name: 'include',
     required: false,
-    description: 'sections, lectures, courseReviews 등 포함할 관계 지정'
+    description: 'sections, lectures, courseReviews 등 포함할 관계 지정',
   })
   @ApiOkResponse({
     description: '코스 상세 정보',
-    type: CourseEntity
+    type: CourseEntity,
   })
   findOne(
     @Param('id', ParseUUIDPipe) id: string,
@@ -99,7 +115,7 @@ export class CoursesController {
   })
   update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Req() req:Request,
+    @Req() req: Request,
     @Body() updateCourseDto: UpdateCourseDto,
   ) {
     return this.coursesService.update(id, req.user!.sub, updateCourseDto);
@@ -112,10 +128,7 @@ export class CoursesController {
     description: '코스 삭제',
     type: CourseEntity,
   })
-  delete(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Req() req:Request,
-  ) {
+  delete(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
     return this.coursesService.delete(id, req.user!.sub);
   }
 }
