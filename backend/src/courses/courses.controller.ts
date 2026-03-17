@@ -101,9 +101,45 @@ export class CoursesController {
     @Param('id', ParseUUIDPipe) id: string,
     @Query('include') include?: string,
   ) {
-    const includeArray = include ? include.split(',') : undefined;
+    const includeArray = include
+      ? include
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean)
+      : [];
 
-    return this.coursesService.findOne(id, includeArray);
+    const includeSet = new Set(includeArray);
+    const includeObject: Prisma.CourseInclude = {};
+
+    if (includeSet.has('sections') && includeSet.has('lectures')) {
+      includeObject.sections = {
+        include: {
+          lectures: true,
+        },
+      };
+    } else if (includeSet.has('sections')) {
+      includeObject.sections = true;
+    }
+
+    const simpleIncludeKeys: Array<keyof Prisma.CourseInclude> = [
+      'lectures',
+      'categories',
+      'enrollments',
+      'reviews',
+      'questions',
+      'instructor',
+    ];
+
+    for (const key of simpleIncludeKeys) {
+      if (includeSet.has(key) && !(key === 'lectures' && includeObject.sections)) {
+        includeObject[key] = true;
+      }
+    }
+
+    return this.coursesService.findOne(
+      id,
+      Object.keys(includeObject).length > 0 ? includeObject : undefined,
+    );
   }
 
   @Patch(':id')
