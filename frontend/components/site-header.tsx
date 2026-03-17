@@ -57,10 +57,15 @@ const getCategoryHref = (category: CategoryLike) => {
 
 export default function SiteHeader({ categories }: SiteHeaderProps) {
   const pathname = usePathname();
+  const isSiteHeaderNeeded = !pathname.includes("/course/");
   const isCourseRoute =
     pathname === "/courses" || pathname.startsWith("/courses/");
   const isCategoryNeeded = pathname === "/" || isCourseRoute;
   const isAllActive = pathname === "/";
+
+  if (!isSiteHeaderNeeded) {
+    return null;
+  }
 
   return (
     <header className="border-b border-gray-200 bg-white">
